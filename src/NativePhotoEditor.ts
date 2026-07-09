@@ -1,7 +1,7 @@
 import { TurboModuleRegistry, type TurboModule } from 'react-native';
 
 export interface Spec extends TurboModule {
-  multiply(a: number, b: number): number;
+  open(options: { path: string; stickers?: string[] }): Promise<string>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('PhotoEditor');

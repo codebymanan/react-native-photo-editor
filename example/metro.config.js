@@ -16,4 +16,6 @@ const config = withMetroConfig(getDefaultConfig(__dirname), {
   conditions: ['react-native-photo-editor-source'],
 });
 
+config.resolver.useWatchman = false;
+
 module.exports = config;
