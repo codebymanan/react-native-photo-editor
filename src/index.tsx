@@ -1,1 +1,2 @@
-export { multiply } from './multiply';
+export { open } from './open';
+export type { PhotoEditorOptions } from './types';

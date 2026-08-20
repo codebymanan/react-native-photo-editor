@@ -1,2 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Needed to load remote images and stickers into the editor -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application>
+        <activity
+            android:name="com.photoeditor.editor.EditImageActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/PhotoEditorTheme.NoActionBar" />
+    </application>
+
 </manifest>

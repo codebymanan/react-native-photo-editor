@@ -1,0 +1,7 @@
+<resources>
+    <dimen name="pe_fab_margin">16dp</dimen>
+    <dimen name="pe_editor_size">35dp</dimen>
+    <dimen name="pe_normal_margin">8dp</dimen>
+    <dimen name="pe_large_margin">16dp</dimen>
+    <dimen name="pe_top_tool_icon_width">50dp</dimen>
+</resources>
