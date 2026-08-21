@@ -46,6 +46,7 @@ import ja.burhanrashid52.photoeditor.shape.ShapeBuilder
 import ja.burhanrashid52.photoeditor.shape.ShapeType
 import kotlinx.coroutines.launch
 import java.io.File
+import androidx.annotation.StringRes
 
 class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickListener,
     PropertiesBSFragment.Properties, ShapeBSFragment.Properties, EmojiListener, StickerListener,
@@ -93,10 +94,13 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
             return
         }
 
+        EditorStrings.setOverrides(intent.getBundleExtra(EXTRA_TRANSLATIONS))
+
         makeFullScreen()
         setContentView(R.layout.pe_activity_edit_image)
 
         initViews()
+        mTxtCurrentTool.setEditorText(R.string.pe_app_name)
 
         mPropertiesBSFragment = PropertiesBSFragment()
         mEmojiBSFragment = EmojiBSFragment()
@@ -127,6 +131,9 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
 
         loadSourceImage()
     }
+
+    /** Resolves a string, honouring any overrides from the `translations` option. */
+    private fun editorString(@StringRes id: Int): String = EditorStrings.get(this, id)
 
     private fun loadSourceImage() {
         val path = intent.getStringExtra(EXTRA_IMAGE_PATH)
@@ -181,7 +188,7 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
                 val styleBuilder = TextStyleBuilder()
                 styleBuilder.withTextColor(colorCode)
                 mPhotoEditor.editText(rootView, inputText, styleBuilder)
-                mTxtCurrentTool.setText(R.string.pe_label_text)
+                mTxtCurrentTool.setEditorText(R.string.pe_label_text)
             }
         })
     }
@@ -220,7 +227,7 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
     private fun saveImage() {
         val outputDir = File(cacheDir, "photo_editor")
         if (!outputDir.exists() && !outputDir.mkdirs()) {
-            showSnackbar(getString(R.string.pe_msg_save_failed))
+            showSnackbar(editorString(R.string.pe_msg_save_failed))
             return
         }
         val outputFile = File(outputDir, "${System.currentTimeMillis()}.png")
@@ -230,7 +237,7 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
             .setTransparencyEnabled(true)
             .build()
 
-        showLoading(getString(R.string.pe_msg_saving))
+        showLoading(editorString(R.string.pe_msg_saving))
         lifecycleScope.launch {
             val result = mPhotoEditor.saveAsFile(outputFile.absolutePath, saveSettings)
             hideLoading()
@@ -239,7 +246,7 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
                 setResult(RESULT_OK, data)
                 finish()
             } else {
-                showSnackbar(getString(R.string.pe_msg_save_failed))
+                showSnackbar(editorString(R.string.pe_msg_save_failed))
             }
         }
     }
@@ -252,17 +259,17 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
 
     override fun onColorChanged(colorCode: Int) {
         mPhotoEditor.setShape(mShapeBuilder.withShapeColor(colorCode))
-        mTxtCurrentTool.setText(R.string.pe_label_brush)
+        mTxtCurrentTool.setEditorText(R.string.pe_label_brush)
     }
 
     override fun onOpacityChanged(opacity: Int) {
         mPhotoEditor.setShape(mShapeBuilder.withShapeOpacity(opacity))
-        mTxtCurrentTool.setText(R.string.pe_label_brush)
+        mTxtCurrentTool.setEditorText(R.string.pe_label_brush)
     }
 
     override fun onShapeSizeChanged(shapeSize: Int) {
         mPhotoEditor.setShape(mShapeBuilder.withShapeSize(shapeSize.toFloat()))
-        mTxtCurrentTool.setText(R.string.pe_label_brush)
+        mTxtCurrentTool.setEditorText(R.string.pe_label_brush)
     }
 
     override fun onShapePicked(shapeType: ShapeType) {
@@ -271,20 +278,20 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
 
     override fun onEmojiClick(emojiUnicode: String) {
         mPhotoEditor.addEmoji(emojiUnicode)
-        mTxtCurrentTool.setText(R.string.pe_label_emoji)
+        mTxtCurrentTool.setEditorText(R.string.pe_label_emoji)
     }
 
     override fun onStickerClick(bitmap: Bitmap) {
         mPhotoEditor.addImage(bitmap)
-        mTxtCurrentTool.setText(R.string.pe_label_sticker)
+        mTxtCurrentTool.setEditorText(R.string.pe_label_sticker)
     }
 
     private fun showSaveDialog() {
         val builder = AlertDialog.Builder(this)
-        builder.setMessage(getString(R.string.pe_msg_save_image))
-        builder.setPositiveButton(getString(R.string.pe_label_save)) { _: DialogInterface?, _: Int -> saveImage() }
-        builder.setNegativeButton(getString(R.string.pe_label_cancel)) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
-        builder.setNeutralButton(getString(R.string.pe_label_discard)) { _: DialogInterface?, _: Int -> cancelAndFinish() }
+        builder.setMessage(editorString(R.string.pe_msg_save_image))
+        builder.setPositiveButton(editorString(R.string.pe_label_save)) { _: DialogInterface?, _: Int -> saveImage() }
+        builder.setNegativeButton(editorString(R.string.pe_label_cancel)) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+        builder.setNeutralButton(editorString(R.string.pe_label_discard)) { _: DialogInterface?, _: Int -> cancelAndFinish() }
         builder.create().show()
     }
 
@@ -298,7 +305,7 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
                 mPhotoEditor.setBrushDrawingMode(true)
                 mShapeBuilder = ShapeBuilder()
                 mPhotoEditor.setShape(mShapeBuilder)
-                mTxtCurrentTool.setText(R.string.pe_label_shape)
+                mTxtCurrentTool.setEditorText(R.string.pe_label_shape)
                 showBottomSheetDialogFragment(mShapeBSFragment)
             }
 
@@ -310,18 +317,18 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
                         val styleBuilder = TextStyleBuilder()
                         styleBuilder.withTextColor(colorCode)
                         mPhotoEditor.addText(inputText, styleBuilder)
-                        mTxtCurrentTool.setText(R.string.pe_label_text)
+                        mTxtCurrentTool.setEditorText(R.string.pe_label_text)
                     }
                 })
             }
 
             ToolType.ERASER -> {
                 mPhotoEditor.brushEraser()
-                mTxtCurrentTool.setText(R.string.pe_label_eraser_mode)
+                mTxtCurrentTool.setEditorText(R.string.pe_label_eraser_mode)
             }
 
             ToolType.FILTER -> {
-                mTxtCurrentTool.setText(R.string.pe_label_filter)
+                mTxtCurrentTool.setEditorText(R.string.pe_label_filter)
                 showFilter(true)
             }
 
@@ -378,7 +385,7 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
     override fun onBackPressed() {
         if (mIsFilterVisible) {
             showFilter(false)
-            mTxtCurrentTool.setText(R.string.pe_app_name)
+            mTxtCurrentTool.setEditorText(R.string.pe_app_name)
         } else if (!mPhotoEditor.isCacheEmpty) {
             showSaveDialog()
         } else {
@@ -392,6 +399,7 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
         const val EXTRA_IMAGE_PATH = "image_path"
         const val EXTRA_STICKERS = "stickers"
         const val EXTRA_LANGUAGE = "language"
+        const val EXTRA_TRANSLATIONS = "translations"
         const val RESULT_EXTRA_PATH = "edited_image_path"
         const val RESULT_EXTRA_ERROR = "error_message"
         const val RESULT_ERROR = 2

@@ -20,4 +20,17 @@ export interface PhotoEditorOptions {
    * English.
    */
   language?: string;
+  /**
+   * Per-key string overrides, keyed by the editor's string names
+   * (`pe_label_save`, `pe_filter_contrast`, ...). See the README for the list.
+   *
+   * Use this when your strings live in JS rather than in native resources, or
+   * to reach a language iOS does not ship. Keys you leave out keep their
+   * built-in value, and on Android anything you have already put in a
+   * `values-<lang>` folder still applies underneath.
+   *
+   * Android honours every key. iOS honours the nine the underlying editor
+   * exposes; the rest are ignored there.
+   */
+  translations?: { [key: string]: string };
 }

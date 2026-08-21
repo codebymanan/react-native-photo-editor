@@ -11,6 +11,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.photoeditor.editor.ColorPickerAdapter.OnColorPickerClickListener
+import android.widget.TextView
 
 class PropertiesBSFragment : BottomSheetDialogFragment(), SeekBar.OnSeekBarChangeListener {
     private var mProperties: Properties? = null
@@ -34,6 +35,9 @@ class PropertiesBSFragment : BottomSheetDialogFragment(), SeekBar.OnSeekBarChang
         val rvColor: RecyclerView = view.findViewById(R.id.rvColors)
         val sbOpacity = view.findViewById<SeekBar>(R.id.sbOpacity)
         val sbBrushSize = view.findViewById<SeekBar>(R.id.sbSize)
+
+        view.findViewById<TextView>(R.id.txtOpacity).setEditorText(R.string.pe_label_opacity)
+        view.findViewById<TextView>(R.id.txtBrushSize).setEditorText(R.string.pe_label_brush)
         sbOpacity.setOnSeekBarChangeListener(this)
         sbBrushSize.setOnSeekBarChangeListener(this)
         val layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)

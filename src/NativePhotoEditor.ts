@@ -5,6 +5,7 @@ export interface Spec extends TurboModule {
     path: string;
     stickers?: string[];
     language?: string;
+    translations?: { [key: string]: string };
   }): Promise<string>;
 }
 

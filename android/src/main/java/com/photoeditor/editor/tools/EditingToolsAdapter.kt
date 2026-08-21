@@ -9,6 +9,7 @@ import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import com.photoeditor.R
 import java.util.ArrayList
+import com.photoeditor.editor.setEditorText
 
 /**
  * @author [Burhanuddin Rashid](https://github.com/burhanrashid52)
@@ -37,7 +38,7 @@ class EditingToolsAdapter(private val mOnItemSelected: OnItemSelected) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mToolList[position]
-        holder.txtTool.setText(item.mToolName)
+        holder.txtTool.setEditorText(item.mToolName)
         holder.imgToolIcon.setImageResource(item.mToolIcon)
     }
 

@@ -49,6 +49,9 @@ class EmojiBSFragment : BottomSheetDialogFragment() {
         (contentView.parent as View).setBackgroundColor(resources.getColor(android.R.color.transparent))
         emojisList = getEmojis(requireContext())
         val rvEmoji: RecyclerView = contentView.findViewById(R.id.rvEmoji)
+
+        contentView.findViewById<TextView>(R.id.txtClose).setEditorText(R.string.pe_label_close)
+        contentView.findViewById<TextView>(R.id.txtDone).setEditorText(R.string.pe_label_done)
         val gridLayoutManager = GridLayoutManager(activity, 5)
         rvEmoji.layoutManager = gridLayoutManager
         val emojiAdapter = EmojiAdapter()

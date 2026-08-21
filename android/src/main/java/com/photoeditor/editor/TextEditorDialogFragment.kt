@@ -64,6 +64,7 @@ class TextEditorDialogFragment : DialogFragment() {
         mInputMethodManager =
             activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         mAddTextDoneTextView = view.findViewById(R.id.add_text_done_tv)
+        mAddTextDoneTextView.setEditorText(R.string.pe_label_done)
 
         //Setup the color picker for text color
         val addTextColorPickerRecyclerView: RecyclerView =

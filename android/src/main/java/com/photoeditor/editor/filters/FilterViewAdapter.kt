@@ -14,6 +14,7 @@ import com.photoeditor.R
 import ja.burhanrashid52.photoeditor.PhotoFilter
 import java.io.IOException
 import java.util.ArrayList
+import com.photoeditor.editor.setEditorText
 
 /**
  * @author [Burhanuddin Rashid](https://github.com/burhanrashid52)
@@ -40,7 +41,7 @@ class FilterViewAdapter(private val mFilterListener: FilterListener) :
         val filter = mFilterList[position]
         val fromAsset = getBitmapFromAsset(holder.itemView.context, filter.mAssetPath)
         holder.mImageFilterView.setImageBitmap(fromAsset)
-        holder.mTxtFilterName.setText(filter.mFilterName)
+        holder.mTxtFilterName.setEditorText(filter.mFilterName)
     }
 
     override fun getItemCount(): Int {

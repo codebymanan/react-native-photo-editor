@@ -28,6 +28,7 @@
 
     <ImageView
         android:id="@+id/imgUndo"
+        android:contentDescription="@string/pe_label_undo"
         android:layout_width="@dimen/pe_top_tool_icon_width"
         android:layout_height="wrap_content"
         android:background="@color/pe_semi_black_transparent"
@@ -38,6 +39,7 @@
 
     <ImageView
         android:id="@+id/imgRedo"
+        android:contentDescription="@string/pe_label_redo"
         android:layout_width="@dimen/pe_top_tool_icon_width"
         android:layout_height="wrap_content"
         android:background="@color/pe_semi_black_transparent"
@@ -91,7 +93,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:singleLine="true"
-        android:text="@string/pe_app_name"
+        tools:text="@string/pe_app_name"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

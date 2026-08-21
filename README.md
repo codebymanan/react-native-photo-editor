@@ -27,6 +27,7 @@ const editedPath = await open({
 | `path` | `string` | **Required.** Image to edit. Accepts a local file path, a `file://` or `content://` URI, or a remote `http(s)` URL. |
 | `stickers` | `string[]` | Sticker image URLs shown in the sticker picker. |
 | `language` | `string` | BCP-47 tag (`'fr'`, `'pt-BR'`, `'zh-Hans'`) for the editor UI. Defaults to the device language. See [Localization](#localization). |
+| `translations` | `Record<string, string>` | Per-key string overrides. See [Localization](#localization). |
 
 ## Localization
 
@@ -82,58 +83,88 @@ That's the whole mechanism. Three things worth knowing:
   your app has no `values-fr/`, the editor stays in English. The example app
   ships one to demonstrate this.
 
+### Supplying strings from JS
+
+`translations` overrides individual strings by key, for when your copy lives in
+JS rather than in native resources, or when you need a language iOS does not
+ship:
+
+```js
+await open({
+  path,
+  language: 'sv',
+  translations: {
+    pe_label_save: 'Spara',
+    pe_label_cancel: 'Avbryt',
+    pe_msg_saving: 'Sparar…',
+  },
+});
+```
+
+Keys you leave out keep their built-in value, and on Android a `values-<lang>`
+folder still applies underneath, so the two mechanisms stack: resources for the
+bulk, `translations` for whatever you want to override per call.
+
+**Android honours every key below. iOS honours nine of them** — the only strings
+the underlying editor exposes — and ignores the rest. That asymmetry is the
+reason to reach for a `values-<lang>` folder first on Android and treat
+`translations` as the cross-platform layer on top.
+
 #### String keys
 
-| Key | English |
-| --- | --- |
-| `pe_app_name` | Photo Editor |
-| `pe_label_brush` | Brush |
-| `pe_label_shape` | Shape |
-| `pe_label_oval` | Oval |
-| `pe_label_rectangle` | Rectangle |
-| `pe_label_line` | Line |
-| `pe_label_arrow` | Arrow |
-| `pe_label_emoji` | Emoji |
-| `pe_label_sticker` | Sticker |
-| `pe_label_eraser` | Eraser |
-| `pe_label_eraser_mode` | Eraser Mode |
-| `pe_label_text` | Text |
-| `pe_label_filter` | Filter |
-| `pe_label_adjust` | Adjust |
-| `pe_label_opacity` | Opacity |
-| `pe_label_rotation` | Rotation |
-| `pe_label_close` | Close |
-| `pe_label_done` | Done |
-| `pe_label_save` | Save |
-| `pe_label_cancel` | Cancel |
-| `pe_label_discard` | Discard |
-| `pe_msg_save_image` | Do you want to exit without saving the image? |
-| `pe_msg_saving` | Saving… |
-| `pe_msg_save_failed` | Failed to save image |
-| `pe_filter_none` | None |
-| `pe_filter_auto_fix` | Auto Fix |
-| `pe_filter_brightness` | Brightness |
-| `pe_filter_contrast` | Contrast |
-| `pe_filter_documentary` | Documentary |
-| `pe_filter_duo_tone` | Duo Tone |
-| `pe_filter_fill_light` | Fill Light |
-| `pe_filter_fish_eye` | Fish Eye |
-| `pe_filter_grain` | Grain |
-| `pe_filter_gray_scale` | Grayscale |
-| `pe_filter_lomish` | Lomish |
-| `pe_filter_negative` | Negative |
-| `pe_filter_posterize` | Posterize |
-| `pe_filter_saturate` | Saturate |
-| `pe_filter_sepia` | Sepia |
-| `pe_filter_sharpen` | Sharpen |
-| `pe_filter_temperature` | Temperature |
-| `pe_filter_tint` | Tint |
-| `pe_filter_vignette` | Vignette |
-| `pe_filter_cross_process` | Cross Process |
-| `pe_filter_black_white` | Black & White |
-| `pe_filter_flip_horizontal` | Flip Horizontal |
-| `pe_filter_flip_vertical` | Flip Vertical |
-| `pe_filter_rotate` | Rotate |
+| Key | English | iOS |
+| --- | --- | --- |
+| `pe_app_name` | Photo Editor | |
+| `pe_label_brush` | Brush | |
+| `pe_label_shape` | Shape | |
+| `pe_label_oval` | Oval | |
+| `pe_label_rectangle` | Rectangle | |
+| `pe_label_line` | Line | |
+| `pe_label_arrow` | Arrow | |
+| `pe_label_emoji` | Emoji | |
+| `pe_label_sticker` | Sticker | |
+| `pe_label_eraser` | Eraser | |
+| `pe_label_eraser_mode` | Eraser Mode | |
+| `pe_label_text` | Text | |
+| `pe_label_filter` | Filter | |
+| `pe_label_adjust` | Adjust | |
+| `pe_label_opacity` | Opacity | |
+| `pe_label_rotation` | Rotation | |
+| `pe_label_undo` | Undo | ✓ |
+| `pe_label_redo` | Redo | |
+| `pe_label_close` | Close | | |
+| `pe_label_done` | Done | ✓ |
+| `pe_label_save` | Save | ✓ |
+| `pe_label_cancel` | Cancel | ✓ |
+| `pe_label_discard` | Discard | |
+| `pe_msg_save_image` | Do you want to exit without saving the image? | |
+| `pe_msg_saving` | Saving… | ✓ |
+| `pe_msg_save_failed` | Failed to save image | |
+| `pe_msg_drag_to_remove` | *(iOS only)* Drag here to remove | ✓ |
+| `pe_filter_none` | None | |
+| `pe_filter_auto_fix` | Auto Fix | |
+| `pe_filter_brightness` | Brightness | ✓ |
+| `pe_filter_contrast` | Contrast | ✓ |
+| `pe_filter_documentary` | Documentary | |
+| `pe_filter_duo_tone` | Duo Tone | |
+| `pe_filter_fill_light` | Fill Light | |
+| `pe_filter_fish_eye` | Fish Eye | |
+| `pe_filter_grain` | Grain | |
+| `pe_filter_gray_scale` | Grayscale | |
+| `pe_filter_lomish` | Lomish | |
+| `pe_filter_negative` | Negative | |
+| `pe_filter_posterize` | Posterize | |
+| `pe_filter_saturate` | Saturate | ✓ |
+| `pe_filter_sepia` | Sepia | |
+| `pe_filter_sharpen` | Sharpen | |
+| `pe_filter_temperature` | Temperature | |
+| `pe_filter_tint` | Tint | |
+| `pe_filter_vignette` | Vignette | |
+| `pe_filter_cross_process` | Cross Process | |
+| `pe_filter_black_white` | Black & White | |
+| `pe_filter_flip_horizontal` | Flip Horizontal | |
+| `pe_filter_flip_vertical` | Flip Vertical | |
+| `pe_filter_rotate` | Rotate | |
 
 ## Contributing
 
