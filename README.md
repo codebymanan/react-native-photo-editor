@@ -1,26 +1,120 @@
 # react-native-photo-editor
 
-A React Native photo editor plugin wrapping native editors for Android and iOS
+A React Native photo editor plugin wrapping native editors for Android and iOS.
 
 ## Installation
-
 
 ```sh
 npm install react-native-photo-editor
 ```
 
-
 ## Usage
 
-
 ```js
-import { multiply } from 'react-native-photo-editor';
+import { open } from 'react-native-photo-editor';
 
-// ...
-
-const result = multiply(3, 7);
+const editedPath = await open({
+  path: 'https://example.com/photo.jpg',
+  stickers: ['https://example.com/sticker.png'],
+});
 ```
 
+`open()` resolves with the file path of the edited image, or rejects with
+`E_CANCELLED` if the user backs out.
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `path` | `string` | **Required.** Image to edit. Accepts a local file path, a `file://` or `content://` URI, or a remote `http(s)` URL. |
+| `stickers` | `string[]` | Sticker image URLs shown in the sticker picker. |
+
+## Localization
+
+### iOS
+
+The iOS editor already ships 18 languages and follows the device locale with no
+setup. Nothing to configure.
+
+### Android
+
+The Android editor ships English only, but every user-facing string is a normal
+Android string resource, so **your app can translate it without forking this
+library**.
+
+Add a `values-<language>` folder to your own app and redefine the keys you care
+about. Android's resource merger gives your app priority over library
+resources, so your values win:
+
+```xml
+<!-- android/app/src/main/res/values-fr/strings.xml -->
+<resources>
+    <string name="pe_label_brush">Pinceau</string>
+    <string name="pe_label_save">Enregistrer</string>
+    <string name="pe_msg_saving">Enregistrement…</string>
+</resources>
+```
+
+That's the whole mechanism. Three things worth knowing:
+
+- **Override only what you need.** Keys you leave out fall back to this
+  library's English.
+- **Any language works**, including ones this library has never heard of. The
+  key names are the only contract.
+- **Match the qualifier.** Overriding a key in the default `values/` folder does
+  *not* win against a more specific match. Put French overrides in
+  `values-fr/`, German in `values-de/`, and so on.
+
+#### String keys
+
+| Key | English |
+| --- | --- |
+| `pe_app_name` | Photo Editor |
+| `pe_label_brush` | Brush |
+| `pe_label_shape` | Shape |
+| `pe_label_oval` | Oval |
+| `pe_label_rectangle` | Rectangle |
+| `pe_label_line` | Line |
+| `pe_label_arrow` | Arrow |
+| `pe_label_emoji` | Emoji |
+| `pe_label_sticker` | Sticker |
+| `pe_label_eraser` | Eraser |
+| `pe_label_eraser_mode` | Eraser Mode |
+| `pe_label_text` | Text |
+| `pe_label_filter` | Filter |
+| `pe_label_adjust` | Adjust |
+| `pe_label_opacity` | Opacity |
+| `pe_label_rotation` | Rotation |
+| `pe_label_close` | Close |
+| `pe_label_done` | Done |
+| `pe_label_save` | Save |
+| `pe_label_cancel` | Cancel |
+| `pe_label_discard` | Discard |
+| `pe_msg_save_image` | Do you want to exit without saving the image? |
+| `pe_msg_saving` | Saving… |
+| `pe_msg_save_failed` | Failed to save image |
+| `pe_filter_none` | None |
+| `pe_filter_auto_fix` | Auto Fix |
+| `pe_filter_brightness` | Brightness |
+| `pe_filter_contrast` | Contrast |
+| `pe_filter_documentary` | Documentary |
+| `pe_filter_duo_tone` | Duo Tone |
+| `pe_filter_fill_light` | Fill Light |
+| `pe_filter_fish_eye` | Fish Eye |
+| `pe_filter_grain` | Grain |
+| `pe_filter_gray_scale` | Grayscale |
+| `pe_filter_lomish` | Lomish |
+| `pe_filter_negative` | Negative |
+| `pe_filter_posterize` | Posterize |
+| `pe_filter_saturate` | Saturate |
+| `pe_filter_sepia` | Sepia |
+| `pe_filter_sharpen` | Sharpen |
+| `pe_filter_temperature` | Temperature |
+| `pe_filter_tint` | Tint |
+| `pe_filter_vignette` | Vignette |
+| `pe_filter_cross_process` | Cross Process |
+| `pe_filter_black_white` | Black & White |
+| `pe_filter_flip_horizontal` | Flip Horizontal |
+| `pe_filter_flip_vertical` | Flip Vertical |
+| `pe_filter_rotate` | Rotate |
 
 ## Contributing
 
