@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "react-native-photo-editor": ["./src/index"]
+      "@codebymanan/react-native-photo-editor": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

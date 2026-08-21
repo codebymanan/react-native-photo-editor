@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { open } from 'react-native-photo-editor';
+import { open } from '@codebymanan/react-native-photo-editor';
 
 const SAMPLE_IMAGE =
   'https://raw.githubusercontent.com/burhanrashid52/PhotoEditor/master/app/src/main/res/drawable/paris_tower.jpg';
