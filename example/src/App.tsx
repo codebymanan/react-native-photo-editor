@@ -34,6 +34,26 @@ const SWEDISH = {
   pe_filter_saturate: 'Mättnad',
 };
 
+// Arabic is the RTL case. iOS ships it; on Android the tag drives the layout
+// direction and these strings fill in what the app has no resources for.
+const ARABIC = {
+  pe_label_brush: 'فرشاة',
+  pe_label_shape: 'شكل',
+  pe_label_text: 'نص',
+  pe_label_eraser: 'ممحاة',
+  pe_label_filter: 'مرشح',
+  pe_label_emoji: 'إيموجي',
+  pe_label_sticker: 'ملصق',
+  pe_label_cancel: 'إلغاء',
+  pe_label_done: 'تم',
+  pe_label_save: 'حفظ',
+  pe_label_undo: 'تراجع',
+  pe_msg_saving: 'جارٍ الحفظ…',
+  pe_filter_brightness: 'السطوع',
+  pe_filter_contrast: 'التباين',
+  pe_filter_saturate: 'التشبع',
+};
+
 // Français comes from android/app/src/main/res/values-fr/strings.xml on Android
 // and from the editor's own bundle on iOS, so it needs no translations at all.
 const LANGUAGES = [
@@ -41,6 +61,7 @@ const LANGUAGES = [
   { label: 'Français', tag: 'fr', translations: undefined },
   { label: '日本語', tag: 'ja', translations: undefined },
   { label: 'Svenska', tag: 'sv', translations: SWEDISH },
+  { label: 'العربية', tag: 'ar', translations: ARABIC },
 ];
 
 export default function App() {
@@ -101,6 +122,8 @@ const styles = StyleSheet.create({
   },
   languages: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
     gap: 8,
     marginBottom: 16,
   },

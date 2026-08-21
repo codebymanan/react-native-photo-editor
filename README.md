@@ -166,6 +166,26 @@ reason to reach for a `values-<lang>` folder first on Android and treat
 | `pe_filter_flip_vertical` | Flip Vertical | |
 | `pe_filter_rotate` | Rotate | |
 
+### Right-to-left languages
+
+**Android** mirrors the editor for an RTL tag such as `language: 'ar'`, but only
+if your app has opted into RTL at all:
+
+```xml
+<!-- android/app/src/main/AndroidManifest.xml -->
+<application android:supportsRtl="true">
+```
+
+Without that flag Android pins the whole app to left-to-right and the editor
+cannot override it. The editor's own layouts use `start`/`end` throughout and
+the undo and redo arrows are `autoMirrored`, so nothing else is needed.
+
+**iOS** translates but does not mirror. `language` selects the editor's string
+bundle; UIKit takes layout direction from the app's own localizations, and the
+underlying editor never sets `semanticContentAttribute`. So the iOS editor lays
+out right-to-left when your app itself is running in an RTL language, and not
+because of this option.
+
 ## Contributing
 
 - [Development workflow](CONTRIBUTING.md#development-workflow)
