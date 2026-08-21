@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.photoeditor.editor.ColorPickerAdapter.OnColorPickerClickListener
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import ja.burhanrashid52.photoeditor.shape.ShapeType
+import android.widget.RadioButton
+import android.widget.TextView
 
 class ShapeBSFragment : BottomSheetDialogFragment(), SeekBar.OnSeekBarChangeListener {
     private var mProperties: Properties? = null
@@ -38,6 +40,15 @@ class ShapeBSFragment : BottomSheetDialogFragment(), SeekBar.OnSeekBarChangeList
         val sbOpacity = view.findViewById<SeekBar>(R.id.shapeOpacity)
         val sbBrushSize = view.findViewById<SeekBar>(R.id.shapeSize)
         val shapeGroup = view.findViewById<RadioGroup>(R.id.shapeRadioGroup)
+
+        view.findViewById<RadioButton>(R.id.brushRadioButton).setEditorText(R.string.pe_label_brush)
+        view.findViewById<RadioButton>(R.id.lineRadioButton).setEditorText(R.string.pe_label_line)
+        view.findViewById<RadioButton>(R.id.arrowRadioButton).setEditorText(R.string.pe_label_arrow)
+        view.findViewById<RadioButton>(R.id.ovalRadioButton).setEditorText(R.string.pe_label_oval)
+        view.findViewById<RadioButton>(R.id.rectRadioButton).setEditorText(R.string.pe_label_rectangle)
+        view.findViewById<TextView>(R.id.txtShapeSize).setEditorText(R.string.pe_label_brush)
+        view.findViewById<TextView>(R.id.txtOpacity).setEditorText(R.string.pe_label_opacity)
+        view.findViewById<TextView>(R.id.shapeType).setEditorText(R.string.pe_label_shape)
 
         // shape picker
         shapeGroup.setOnCheckedChangeListener { _: RadioGroup?, checkedId: Int ->

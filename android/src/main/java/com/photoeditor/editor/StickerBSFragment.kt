@@ -19,6 +19,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import android.widget.TextView
 
 class StickerBSFragment : BottomSheetDialogFragment() {
     private var mStickerListener: StickerListener? = null
@@ -60,6 +61,9 @@ class StickerBSFragment : BottomSheetDialogFragment() {
         }
         (contentView.parent as View).setBackgroundColor(resources.getColor(android.R.color.transparent))
         val rvEmoji: RecyclerView = contentView.findViewById(R.id.rvEmoji)
+
+        contentView.findViewById<TextView>(R.id.txtClose).setEditorText(R.string.pe_label_close)
+        contentView.findViewById<TextView>(R.id.txtDone).setEditorText(R.string.pe_label_done)
         val gridLayoutManager = GridLayoutManager(activity, 3)
         rvEmoji.layoutManager = gridLayoutManager
         val stickerAdapter = StickerAdapter()

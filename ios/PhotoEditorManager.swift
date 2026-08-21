@@ -7,6 +7,8 @@ public class PhotoEditorManager: NSObject {
   @objc public static func open(
     _ path: String,
     stickers: [String],
+    language: String?,
+    translations: [String: Any]?,
     resolve: @escaping (String) -> Void,
     reject: @escaping (String, String) -> Void
   ) {
@@ -20,6 +22,10 @@ public class PhotoEditorManager: NSObject {
           reject("E_NO_ACTIVITY", "No view controller available to present the editor")
           return
         }
+
+        ZLImageEditorUIConfiguration.default()
+          .languageType(languageType(for: language))
+          .customLanguageConfig(customLanguage(from: translations))
 
         ZLImageEditorConfiguration.default()
           .editImageTools([.draw, .clip, .textSticker, .mosaic, .filter, .adjust])
@@ -35,6 +41,74 @@ public class PhotoEditorManager: NSObject {
         }
         presenter.present(editor, animated: true)
       }
+    }
+  }
+
+  /// The editor exposes exactly these nine strings for overriding, so this is
+  /// the whole of what `translations` can reach on iOS. Keys are the same ones
+  /// Android uses, which is what lets one map drive both platforms.
+  private static let overridableKeys: [String: ZLLocalLanguageKey] = [
+    "pe_label_cancel": .cancel,
+    "pe_label_done": .done,
+    "pe_label_save": .editFinish,
+    "pe_label_undo": .revert,
+    "pe_filter_brightness": .brightness,
+    "pe_filter_contrast": .contrast,
+    "pe_filter_saturate": .saturation,
+    "pe_msg_drag_to_remove": .textStickerRemoveTips,
+    "pe_msg_saving": .hudProcessing,
+  ]
+
+  /// Always returns a dictionary, empty included: the configuration is a shared
+  /// singleton, so anything left unassigned would outlive the call that set it.
+  private static func customLanguage(from translations: [String: Any]?) -> [ZLLocalLanguageKey: String] {
+    guard let translations else { return [:] }
+
+    return overridableKeys.reduce(into: [:]) { config, entry in
+      // Non-string values are dropped rather than coerced, so a mistyped entry
+      // falls back to the built-in string.
+      if let value = translations[entry.key] as? String, !value.isEmpty {
+        config[entry.value] = value
+      }
+    }
+  }
+
+  /// Maps a BCP-47 tag onto the languages the editor ships.
+  ///
+  /// A missing tag means "follow the device". An unrecognised tag falls back to
+  /// English rather than to the device language: the caller explicitly asked not
+  /// to use the device setting, so quietly reverting to it would be the one
+  /// answer we know they did not want.
+  private static func languageType(for tag: String?) -> ZLImageEditorLanguageType {
+    guard let tag = tag?.lowercased(), !tag.isEmpty else { return .system }
+
+    // Tolerate the Java-style "pt_BR" spelling as well as BCP-47's "pt-BR".
+    let subtags = tag.split(whereSeparator: { $0 == "-" || $0 == "_" }).map(String.init)
+
+    // Chinese needs the script or region, not just the language, to pick a bundle.
+    if subtags.first == "zh" {
+      let traditional = subtags.dropFirst().contains { ["hant", "tw", "hk", "mo"].contains($0) }
+      return traditional ? .chineseTraditional : .chineseSimplified
+    }
+
+    switch subtags.first ?? tag {
+    case "en": return .english
+    case "ja": return .japanese
+    case "fr": return .french
+    case "de": return .german
+    case "ru": return .russian
+    case "vi": return .vietnamese
+    case "ko": return .korean
+    case "ms": return .malay
+    case "it": return .italian
+    case "id", "in": return .indonesian
+    case "pt": return .portuguese
+    case "es": return .spanish
+    case "tr": return .turkish
+    case "ar": return .arabic
+    case "uk": return .ukrainian
+    case "nl": return .dutch
+    default: return .english
     }
   }
 

@@ -2,11 +2,14 @@ package com.photoeditor
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import com.facebook.react.bridge.BaseActivityEventListener
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableType
 import com.photoeditor.editor.EditImageActivity
+import com.photoeditor.editor.EditorLocale
 
 class PhotoEditorModule(reactContext: ReactApplicationContext) :
   NativePhotoEditorSpec(reactContext) {
@@ -77,10 +80,35 @@ class PhotoEditorModule(reactContext: ReactApplicationContext) :
 
     pendingPromise = promise
 
+    // Assigned unconditionally so a call without a language clears the tag left
+    // behind by an earlier one. The activity reads it from attachBaseContext(),
+    // which runs before getIntent() is usable.
+    val language = options.getString("language")?.takeIf { it.isNotBlank() }
+    EditorLocale.pendingTag = language
+
     val intent = Intent(activity, EditImageActivity::class.java)
       .putExtra(EditImageActivity.EXTRA_IMAGE_PATH, path)
+      .putExtra(EditImageActivity.EXTRA_LANGUAGE, language)
+      .putExtra(EditImageActivity.EXTRA_TRANSLATIONS, translationsBundle(options))
       .putStringArrayListExtra(EditImageActivity.EXTRA_STICKERS, stickers)
     activity.startActivityForResult(intent, EDITOR_REQUEST_CODE)
+  }
+
+  /**
+   * Flattens the `translations` option into a Bundle. Non-string values are
+   * dropped rather than coerced, so a mistyped entry falls back to the built-in
+   * string instead of rendering something like "true".
+   */
+  private fun translationsBundle(options: ReadableMap): Bundle? {
+    val translations = options.getMap("translations") ?: return null
+    val bundle = Bundle()
+    val iterator = translations.keySetIterator()
+    while (iterator.hasNextKey()) {
+      val key = iterator.nextKey()
+      if (translations.getType(key) != ReadableType.String) continue
+      translations.getString(key)?.let { bundle.putString(key, it) }
+    }
+    return if (bundle.isEmpty) null else bundle
   }
 
   override fun invalidate() {

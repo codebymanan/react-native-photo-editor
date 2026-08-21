@@ -26,8 +26,16 @@
         }
     }
 
+    // Codegen hands dictionaries back untyped, so check before casting.
+    id rawTranslations = options.translations();
+    NSDictionary *translations = [rawTranslations isKindOfClass:[NSDictionary class]]
+        ? (NSDictionary *)rawTranslations
+        : nil;
+
     [PhotoEditorManager open:path
                     stickers:stickers
+                    language:options.language()
+                translations:translations
                      resolve:^(NSString *outputPath) {
                          resolve(outputPath);
                      }

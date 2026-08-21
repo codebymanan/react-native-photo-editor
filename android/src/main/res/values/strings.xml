@@ -20,6 +20,38 @@
     <string name="pe_label_cancel">Cancel</string>
     <string name="pe_label_discard">Discard</string>
 
+    <string name="pe_label_opacity">Opacity</string>
+    <string name="pe_label_undo">Undo</string>
+    <string name="pe_label_redo">Redo</string>
+    <string name="pe_label_close">Close</string>
+    <string name="pe_label_done">Done</string>
+
+    <!-- Filter names, shown under each thumbnail in the filter strip -->
+    <string name="pe_filter_none">None</string>
+    <string name="pe_filter_auto_fix">Auto Fix</string>
+    <string name="pe_filter_brightness">Brightness</string>
+    <string name="pe_filter_contrast">Contrast</string>
+    <string name="pe_filter_documentary">Documentary</string>
+    <string name="pe_filter_duo_tone">Duo Tone</string>
+    <string name="pe_filter_fill_light">Fill Light</string>
+    <string name="pe_filter_fish_eye">Fish Eye</string>
+    <string name="pe_filter_grain">Grain</string>
+    <string name="pe_filter_gray_scale">Grayscale</string>
+    <string name="pe_filter_lomish">Lomish</string>
+    <string name="pe_filter_negative">Negative</string>
+    <string name="pe_filter_posterize">Posterize</string>
+    <string name="pe_filter_saturate">Saturate</string>
+    <string name="pe_filter_sepia">Sepia</string>
+    <string name="pe_filter_sharpen">Sharpen</string>
+    <string name="pe_filter_temperature">Temperature</string>
+    <string name="pe_filter_tint">Tint</string>
+    <string name="pe_filter_vignette">Vignette</string>
+    <string name="pe_filter_cross_process">Cross Process</string>
+    <string name="pe_filter_black_white">Black &amp; White</string>
+    <string name="pe_filter_flip_horizontal">Flip Horizontal</string>
+    <string name="pe_filter_flip_vertical">Flip Vertical</string>
+    <string name="pe_filter_rotate">Rotate</string>
+
     <string-array name="photo_editor_emoji">
 
         <!-- Smiles -->

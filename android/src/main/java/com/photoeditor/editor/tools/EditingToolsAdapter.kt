@@ -5,9 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import com.photoeditor.R
 import java.util.ArrayList
+import com.photoeditor.editor.setEditorText
 
 /**
  * @author [Burhanuddin Rashid](https://github.com/burhanrashid52)
@@ -23,7 +25,7 @@ class EditingToolsAdapter(private val mOnItemSelected: OnItemSelected) :
     }
 
     internal inner class ToolModel(
-        val mToolName: String,
+        @StringRes val mToolName: Int,
         val mToolIcon: Int,
         val mToolType: ToolType
     )
@@ -36,7 +38,7 @@ class EditingToolsAdapter(private val mOnItemSelected: OnItemSelected) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mToolList[position]
-        holder.txtTool.text = item.mToolName
+        holder.txtTool.setEditorText(item.mToolName)
         holder.imgToolIcon.setImageResource(item.mToolIcon)
     }
 
@@ -58,11 +60,11 @@ class EditingToolsAdapter(private val mOnItemSelected: OnItemSelected) :
     }
 
     init {
-        mToolList.add(ToolModel("Shape", R.drawable.pe_ic_oval, ToolType.SHAPE))
-        mToolList.add(ToolModel("Text", R.drawable.pe_ic_text, ToolType.TEXT))
-        mToolList.add(ToolModel("Eraser", R.drawable.pe_ic_eraser, ToolType.ERASER))
-        mToolList.add(ToolModel("Filter", R.drawable.pe_ic_photo_filter, ToolType.FILTER))
-        mToolList.add(ToolModel("Emoji", R.drawable.pe_ic_insert_emoticon, ToolType.EMOJI))
-        mToolList.add(ToolModel("Sticker", R.drawable.pe_ic_sticker, ToolType.STICKER))
+        mToolList.add(ToolModel(R.string.pe_label_shape, R.drawable.pe_ic_oval, ToolType.SHAPE))
+        mToolList.add(ToolModel(R.string.pe_label_text, R.drawable.pe_ic_text, ToolType.TEXT))
+        mToolList.add(ToolModel(R.string.pe_label_eraser, R.drawable.pe_ic_eraser, ToolType.ERASER))
+        mToolList.add(ToolModel(R.string.pe_label_filter, R.drawable.pe_ic_photo_filter, ToolType.FILTER))
+        mToolList.add(ToolModel(R.string.pe_label_emoji, R.drawable.pe_ic_insert_emoticon, ToolType.EMOJI))
+        mToolList.add(ToolModel(R.string.pe_label_sticker, R.drawable.pe_ic_sticker, ToolType.STICKER))
     }
 }
