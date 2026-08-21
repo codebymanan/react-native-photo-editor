@@ -21,7 +21,6 @@
     <string name="pe_label_discard">Discard</string>
 
     <string name="pe_label_opacity">Opacity</string>
-    <string name="pe_label_rotation">Rotation</string>
     <string name="pe_label_undo">Undo</string>
     <string name="pe_label_redo">Redo</string>
     <string name="pe_label_close">Close</string>

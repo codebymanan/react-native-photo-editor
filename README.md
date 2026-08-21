@@ -129,7 +129,6 @@ reason to reach for a `values-<lang>` folder first on Android and treat
 | `pe_label_filter` | Filter | |
 | `pe_label_adjust` | Adjust | |
 | `pe_label_opacity` | Opacity | |
-| `pe_label_rotation` | Rotation | |
 | `pe_label_undo` | Undo | ✓ |
 | `pe_label_redo` | Redo | |
 | `pe_label_close` | Close | | |
