@@ -1,5 +1,5 @@
 {
-  "name": "react-native-photo-editor",
+  "name": "@codebymanan/react-native-photo-editor",
   "version": "0.1.0",
   "description": "A React Native photo editor plugin wrapping native editors for Android and iOS",
   "main": "./lib/module/index.js",
@@ -54,7 +54,8 @@
   },
   "homepage": "https://github.com/codebymanan/react-native-photo-editor#readme",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "devDependencies": {
     "@eslint/compat": "^2.1.0",

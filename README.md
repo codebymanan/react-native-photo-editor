@@ -1,17 +1,17 @@
-# react-native-photo-editor
+# @codebymanan/react-native-photo-editor
 
 A React Native photo editor plugin wrapping native editors for Android and iOS.
 
 ## Installation
 
 ```sh
-npm install react-native-photo-editor
+npm install @codebymanan/react-native-photo-editor
 ```
 
 ## Usage
 
 ```js
-import { open } from 'react-native-photo-editor';
+import { open } from '@codebymanan/react-native-photo-editor';
 
 const editedPath = await open({
   path: 'https://example.com/photo.jpg',
