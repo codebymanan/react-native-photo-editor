@@ -1,6 +1,7 @@
 package com.photoeditor.editor
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
@@ -68,8 +69,30 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
     private val mConstraintSet = ConstraintSet()
     private var mIsFilterVisible = false
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(newBase)
+
+        // getIntent() is still null at this point, so the tag comes from EditorLocale.
+        // Applied after super() on purpose: AppCompat installs the app-wide locale
+        // during attachBaseContext on API < 33, and overriding afterwards is what
+        // keeps the per-call language winning on those versions too.
+        EditorLocale.overrideConfiguration(baseContext, EditorLocale.pendingTag)
+            ?.let(::applyOverrideConfiguration)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // The tag lives in a process-global field, so a process kill loses it and
+        // attachBaseContext above will have run without a locale. Put it back and
+        // start over. This cannot loop: the field is non-null on the second pass.
+        val language = intent.getStringExtra(EXTRA_LANGUAGE)
+        if (EditorLocale.pendingTag == null && !language.isNullOrBlank()) {
+            EditorLocale.pendingTag = language
+            recreate()
+            return
+        }
+
         makeFullScreen()
         setContentView(R.layout.pe_activity_edit_image)
 
@@ -368,6 +391,7 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
 
         const val EXTRA_IMAGE_PATH = "image_path"
         const val EXTRA_STICKERS = "stickers"
+        const val EXTRA_LANGUAGE = "language"
         const val RESULT_EXTRA_PATH = "edited_image_path"
         const val RESULT_EXTRA_ERROR = "error_message"
         const val RESULT_ERROR = 2

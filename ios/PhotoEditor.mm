@@ -28,6 +28,7 @@
 
     [PhotoEditorManager open:path
                     stickers:stickers
+                    language:options.language()
                      resolve:^(NSString *outputPath) {
                          resolve(outputPath);
                      }

@@ -26,13 +26,28 @@ const editedPath = await open({
 | --- | --- | --- |
 | `path` | `string` | **Required.** Image to edit. Accepts a local file path, a `file://` or `content://` URI, or a remote `http(s)` URL. |
 | `stickers` | `string[]` | Sticker image URLs shown in the sticker picker. |
+| `language` | `string` | BCP-47 tag (`'fr'`, `'pt-BR'`, `'zh-Hans'`) for the editor UI. Defaults to the device language. See [Localization](#localization). |
 
 ## Localization
+
+By default the editor follows the device language on both platforms. Pass
+`language` only when your app has its own language picker and the editor should
+follow that instead:
+
+```js
+await open({ path, language: 'fr' });
+```
 
 ### iOS
 
 The iOS editor already ships 18 languages and follows the device locale with no
 setup. Nothing to configure.
+
+`language` maps onto those 18: Chinese (Simplified and Traditional), English,
+Japanese, French, German, Russian, Vietnamese, Korean, Malay, Italian,
+Indonesian, Portuguese, Spanish, Turkish, Arabic, Ukrainian and Dutch. A tag
+outside that set falls back to English rather than to the device language,
+since the caller has explicitly asked not to use the device setting.
 
 ### Android
 
@@ -62,6 +77,10 @@ That's the whole mechanism. Three things worth knowing:
 - **Match the qualifier.** Overriding a key in the default `values/` folder does
   *not* win against a more specific match. Put French overrides in
   `values-fr/`, German in `values-de/`, and so on.
+- **`language` selects the folder, it does not create one.** Passing
+  `language: 'fr'` makes the editor resolve strings against `values-fr/`; if
+  your app has no `values-fr/`, the editor stays in English. The example app
+  ships one to demonstrate this.
 
 #### String keys
 

@@ -7,6 +7,7 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
 import com.photoeditor.editor.EditImageActivity
+import com.photoeditor.editor.EditorLocale
 
 class PhotoEditorModule(reactContext: ReactApplicationContext) :
   NativePhotoEditorSpec(reactContext) {
@@ -77,8 +78,15 @@ class PhotoEditorModule(reactContext: ReactApplicationContext) :
 
     pendingPromise = promise
 
+    // Assigned unconditionally so a call without a language clears the tag left
+    // behind by an earlier one. The activity reads it from attachBaseContext(),
+    // which runs before getIntent() is usable.
+    val language = options.getString("language")?.takeIf { it.isNotBlank() }
+    EditorLocale.pendingTag = language
+
     val intent = Intent(activity, EditImageActivity::class.java)
       .putExtra(EditImageActivity.EXTRA_IMAGE_PATH, path)
+      .putExtra(EditImageActivity.EXTRA_LANGUAGE, language)
       .putStringArrayListExtra(EditImageActivity.EXTRA_STICKERS, stickers)
     activity.startActivityForResult(intent, EDITOR_REQUEST_CODE)
   }
