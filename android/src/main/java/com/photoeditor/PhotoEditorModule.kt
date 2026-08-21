@@ -55,7 +55,7 @@ class PhotoEditorModule(reactContext: ReactApplicationContext) :
   }
 
   override fun open(options: ReadableMap, promise: Promise) {
-    val activity = currentActivity
+    val activity = reactApplicationContext.currentActivity
     if (activity == null) {
       promise.reject(E_NO_ACTIVITY, "No activity attached to React context")
       return
