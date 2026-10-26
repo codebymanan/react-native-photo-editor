@@ -1,3 +1,4 @@
+import Photos
 import UIKit
 import ZLImageEditor
 
@@ -12,10 +13,14 @@ public class PhotoEditorManager: NSObject {
     resolve: @escaping (String) -> Void,
     reject: @escaping (String, String) -> Void
   ) {
-    loadImage(path) { image in
+    loadImage(path) { result in
       DispatchQueue.main.async {
-        guard let image else {
-          reject("E_FAILED", "Could not load image: \(path)")
+        let image: UIImage
+        switch result {
+        case .success(let loaded):
+          image = loaded
+        case .failure(let error):
+          reject("E_FAILED", error.message)
           return
         }
         guard let presenter = topViewController() else {
@@ -27,9 +32,12 @@ public class PhotoEditorManager: NSObject {
           .languageType(languageType(for: language))
           .customLanguageConfig(customLanguage(from: translations))
 
+        // Assigned on every call, nil included: the configuration is a shared
+        // singleton, and the editor hides the sticker tool when this is nil.
         ZLImageEditorConfiguration.default()
-          .editImageTools([.draw, .clip, .textSticker, .mosaic, .filter, .adjust])
+          .editImageTools([.draw, .clip, .imageSticker, .textSticker, .mosaic, .filter, .adjust])
           .adjustTools([.brightness, .contrast, .saturation])
+          .imageStickerContainerView(stickers.isEmpty ? nil : StickerContainerView(urls: stickers))
 
         let editor = ZLEditImageViewController(image: image)
         editor.modalPresentationStyle = .fullScreen
@@ -112,18 +120,93 @@ public class PhotoEditorManager: NSObject {
     }
   }
 
-  private static func loadImage(_ path: String, completion: @escaping (UIImage?) -> Void) {
-    if path.hasPrefix("http://") || path.hasPrefix("https://") {
+  struct LoadError: Error {
+    let message: String
+  }
+
+  /// Loads the editor image or a sticker. `completion` may run on any queue.
+  static func loadImage(_ path: String, completion: @escaping (Result<UIImage, LoadError>) -> Void) {
+    let failed = LoadError(message: "Could not load image: \(path)")
+
+    if path.hasPrefix("ph://") {
+      loadPhotoLibraryImage(localIdentifier: String(path.dropFirst(5)), path: path, completion: completion)
+    } else if path.hasPrefix("http://") || path.hasPrefix("https://") {
       guard let url = URL(string: path) else {
-        completion(nil)
+        completion(.failure(failed))
         return
       }
       URLSession.shared.dataTask(with: url) { data, _, _ in
-        completion(data.flatMap(UIImage.init(data:)))
+        guard let image = data.flatMap(UIImage.init(data:)) else {
+          completion(.failure(failed))
+          return
+        }
+        completion(.success(image))
       }.resume()
     } else {
       let filePath = path.hasPrefix("file://") ? String(path.dropFirst(7)) : path
-      completion(UIImage(contentsOfFile: filePath))
+      guard let image = UIImage(contentsOfFile: filePath) else {
+        completion(.failure(failed))
+        return
+      }
+      completion(.success(image))
+    }
+  }
+
+  /// Resolves a `ph://` URI, as returned by photo pickers such as
+  /// @react-native-camera-roll/camera-roll, through the Photos framework.
+  private static func loadPhotoLibraryImage(
+    localIdentifier: String,
+    path: String,
+    completion: @escaping (Result<UIImage, LoadError>) -> Void
+  ) {
+    withPhotoLibraryAccess { granted in
+      guard granted else {
+        completion(.failure(LoadError(
+          message: "Photo library access is needed to load \(path)")))
+        return
+      }
+
+      // Some pickers hand out only the asset UUID, without the "/L0/001"
+      // suffix that a full local identifier carries; try both.
+      var identifiers = [localIdentifier]
+      if !localIdentifier.contains("/") {
+        identifiers.append("\(localIdentifier)/L0/001")
+      }
+      guard let asset = PHAsset.fetchAssets(withLocalIdentifiers: identifiers, options: nil).firstObject
+      else {
+        completion(.failure(LoadError(message: "No photo library asset found for \(path)")))
+        return
+      }
+
+      let options = PHImageRequestOptions()
+      // Lets iCloud-only photos download instead of failing.
+      options.isNetworkAccessAllowed = true
+      options.deliveryMode = .highQualityFormat
+      options.version = .current
+
+      PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) {
+        data, _, _, _ in
+        guard let image = data.flatMap(UIImage.init(data:)) else {
+          completion(.failure(LoadError(message: "Could not load image: \(path)")))
+          return
+        }
+        completion(.success(image))
+      }
+    }
+  }
+
+  /// Only prompts when the user has never been asked. Limited access counts as
+  /// granted: the asset is reachable if the user included it in the selection.
+  private static func withPhotoLibraryAccess(_ completion: @escaping (Bool) -> Void) {
+    switch PHPhotoLibrary.authorizationStatus(for: .readWrite) {
+    case .authorized, .limited:
+      completion(true)
+    case .notDetermined:
+      PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
+        completion(status == .authorized || status == .limited)
+      }
+    default:
+      completion(false)
     }
   }
 

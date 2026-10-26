@@ -24,10 +24,18 @@ const editedPath = await open({
 
 | Option | Type | Description |
 | --- | --- | --- |
-| `path` | `string` | **Required.** Image to edit. Accepts a local file path, a `file://` or `content://` URI, or a remote `http(s)` URL. |
-| `stickers` | `string[]` | Sticker image URLs shown in the sticker picker. |
+| `path` | `string` | **Required.** Image to edit. Accepts a local file path, a `file://` URI, a remote `http(s)` URL, a `content://` URI (Android) or a `ph://` photo library URI (iOS, see below). |
+| `stickers` | `string[]` | Sticker images shown in the sticker picker, as remote URLs or local paths. On iOS the sticker tool only appears when this is non-empty. |
 | `language` | `string` | BCP-47 tag (`'fr'`, `'pt-BR'`, `'zh-Hans'`) for the editor UI. Defaults to the device language. See [Localization](#localization). |
 | `translations` | `Record<string, string>` | Per-key string overrides. See [Localization](#localization). |
+
+### Photo library URIs on iOS
+
+`ph://` URIs, as returned by pickers such as
+`@react-native-camera-roll/camera-roll`, are loaded through the Photos
+framework. iCloud-only photos are downloaded on demand. Your app needs an
+`NSPhotoLibraryUsageDescription` entry in its `Info.plist`; if the user has
+never been asked, the editor asks for access before loading the photo.
 
 ## Localization
 

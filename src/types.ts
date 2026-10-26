@@ -1,11 +1,13 @@
 export interface PhotoEditorOptions {
   /**
-   * The image to edit. Accepts a local file path, `file://` or `content://`
-   * URI, or a remote `http(s)` URL.
+   * The image to edit. Accepts a local file path, `file://` URI, or a remote
+   * `http(s)` URL, plus `content://` URIs on Android and `ph://` photo library
+   * URIs on iOS.
    */
   path: string;
   /**
-   * Optional list of sticker image URLs shown in the sticker picker.
+   * Optional list of sticker images (remote URLs or local paths) shown in the
+   * sticker picker. On iOS the sticker tool only appears when this is set.
    */
   stickers?: string[];
   /**
