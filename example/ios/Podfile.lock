@@ -3,7 +3,7 @@ PODS:
   - hermes-engine (250829098.0.10):
     - hermes-engine/Pre-built (= 250829098.0.10)
   - hermes-engine/Pre-built (250829098.0.10)
-  - PhotoEditor (0.1.0):
+  - PhotoEditor (0.1.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -25,7 +25,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-    - ZLImageEditor (~> 3.0)
+    - ZLImageEditor (~> 4.0)
   - RCTDeprecation (0.85.0)
   - RCTRequired (0.85.0)
   - RCTSwiftUI (0.85.0)
@@ -1771,9 +1771,9 @@ PODS:
     - ReactNativeDependencies
   - ReactNativeDependencies (0.85.0)
   - Yoga (0.0.0)
-  - ZLImageEditor (3.0.0):
-    - ZLImageEditor/Core (= 3.0.0)
-  - ZLImageEditor/Core (3.0.0)
+  - ZLImageEditor (4.0.0):
+    - ZLImageEditor/Core (= 4.0.0)
+  - ZLImageEditor/Core (4.0.0)
 
 DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
@@ -2010,7 +2010,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   FBLazyVector: c00c20551d40126351a6783c47ce75f5b374851b
   hermes-engine: 71e84660af7d90e9661316b7d254afc29a950189
-  PhotoEditor: 3a5c94019f5b174709c6f6029924471873e01381
+  PhotoEditor: 5ce80eaa1f9798ea03b79358ce60e0ef09ad230b
   RCTDeprecation: 3bb167081b134461cfeb875ff7ae1945f8635257
   RCTRequired: 74839f55d5058a133a0bc4569b0afec750957f64
   RCTSwiftUI: 87a316382f3eab4dd13d2a0d0fd2adcce917361a
@@ -2082,7 +2082,7 @@ SPEC CHECKSUMS:
   ReactCommon: fe2a3af8975e63efa60f95fca8c34dc85deee360
   ReactNativeDependencies: eaad04fbf09e2645c38591e33c3357bd368f9cfa
   Yoga: e83c3121d079541e69f3c5c623faaaf933fb5812
-  ZLImageEditor: 32582c98e0ab025cc8bcc61867f03f6470170bc0
+  ZLImageEditor: 0ce471b356bea2b983272e21333d8428dfd56392
 
 PODFILE CHECKSUM: 924ddaf667e3e26ab56eb316128b851e41424cda
 

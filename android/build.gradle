@@ -50,7 +50,7 @@ dependencies {
   implementation "com.facebook.react:react-android"
 
   // Editing engine
-  implementation "com.burhanrashid52:photoeditor:3.0.2"
+  implementation "com.burhanrashid52:photoeditor:3.1.1"
 
   // Editor screen UI
   implementation "androidx.appcompat:appcompat:1.7.0"

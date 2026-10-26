@@ -128,6 +128,7 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
             .build()
 
         mPhotoEditor.setOnPhotoEditorListener(this)
+        updateUndoRedoState()
 
         loadSourceImage()
     }
@@ -195,10 +196,12 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
 
     override fun onAddViewListener(viewType: ViewType, numberOfAddedViews: Int) {
         Log.d(TAG, "onAddViewListener() called with: viewType = [$viewType]")
+        updateUndoRedoState()
     }
 
     override fun onRemoveViewListener(viewType: ViewType, numberOfAddedViews: Int) {
         Log.d(TAG, "onRemoveViewListener() called with: viewType = [$viewType]")
+        updateUndoRedoState()
     }
 
     override fun onStartViewChangeListener(viewType: ViewType) {
@@ -207,6 +210,14 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
 
     override fun onStopViewChangeListener(viewType: ViewType) {
         Log.d(TAG, "onStopViewChangeListener() called with: viewType = [$viewType]")
+        // A finished brush stroke clears the redo stack without firing add/remove
+        updateUndoRedoState()
+    }
+
+    /** Greys out undo/redo when there is nothing to step through, via the pe_undo/pe_redo selectors. */
+    private fun updateUndoRedoState() {
+        mImgUndo.isEnabled = mPhotoEditor.isUndoAvailable
+        mImgRedo.isEnabled = mPhotoEditor.isRedoAvailable
     }
 
     override fun onTouchSourceImage(event: MotionEvent) {
@@ -216,8 +227,14 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
     @SuppressLint("NonConstantResourceId")
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.imgUndo -> mPhotoEditor.undo()
-            R.id.imgRedo -> mPhotoEditor.redo()
+            R.id.imgUndo -> {
+                mPhotoEditor.undo()
+                updateUndoRedoState()
+            }
+            R.id.imgRedo -> {
+                mPhotoEditor.redo()
+                updateUndoRedoState()
+            }
 
             R.id.imgSave -> saveImage()
             R.id.imgClose -> onBackPressed()
