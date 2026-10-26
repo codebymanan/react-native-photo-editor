@@ -5,7 +5,43 @@ import ZLImageEditor
 @objc(PhotoEditorManager)
 public class PhotoEditorManager: NSObject {
 
+  /// True from the moment `open()` accepts a call until its promise settles,
+  /// which spans the image load as well as the editor itself. Main thread only.
+  private static var isSessionActive = false
+
   @objc public static func open(
+    _ path: String,
+    stickers: [String],
+    language: String?,
+    translations: [String: Any]?,
+    resolve: @escaping (String) -> Void,
+    reject: @escaping (String, String) -> Void
+  ) {
+    DispatchQueue.main.async {
+      guard !isSessionActive else {
+        reject("E_IN_PROGRESS", "Another editor session is already open")
+        return
+      }
+      isSessionActive = true
+
+      // Every settlement below already happens on the main thread.
+      startSession(
+        path,
+        stickers: stickers,
+        language: language,
+        translations: translations,
+        resolve: { outputPath in
+          isSessionActive = false
+          resolve(outputPath)
+        },
+        reject: { code, message in
+          isSessionActive = false
+          reject(code, message)
+        })
+    }
+  }
+
+  private static func startSession(
     _ path: String,
     stickers: [String],
     language: String?,

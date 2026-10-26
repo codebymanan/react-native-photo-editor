@@ -20,7 +20,7 @@ const editedPath = await open({
 ```
 
 `open()` resolves with the file path of the edited image, or rejects with
-`E_CANCELLED` if the user backs out.
+`E_CANCELLED` if the user backs out (see [Errors](#errors)).
 
 | Option | Type | Description |
 | --- | --- | --- |
@@ -28,6 +28,34 @@ const editedPath = await open({
 | `stickers` | `string[]` | Sticker images shown in the sticker picker, as remote URLs or local paths. On iOS the sticker tool only appears when this is non-empty. |
 | `language` | `string` | BCP-47 tag (`'fr'`, `'pt-BR'`, `'zh-Hans'`) for the editor UI. Defaults to the device language. See [Localization](#localization). |
 | `translations` | `Record<string, string>` | Per-key string overrides. See [Localization](#localization). |
+
+### Stickers
+
+Pass the images you want in the sticker picker as `stickers`. Each entry is a
+remote `http(s)` URL or a path to a file on the device; transparent PNGs work
+best.
+
+```js
+const STICKERS = [
+  'https://example.com/stickers/heart.png',
+  'https://example.com/stickers/star.png',
+  `${RNFS.DocumentDirectoryPath}/stickers/smile.png`, // a file you saved earlier
+];
+
+await open({ path, stickers: STICKERS });
+```
+
+The user opens the sticker tool, taps a sticker to drop it onto the photo, then
+drags, pinches and rotates it into place. Stickers load in the background, so
+remote ones appear in the picker as they arrive.
+
+Images bundled with `require('./sticker.png')` are not file paths in release
+builds, so they cannot be passed directly. Host them remotely or copy them to
+the device first.
+
+When `stickers` is omitted or empty the platforms differ: **iOS** hides the
+sticker tool, while **Android** shows a small built-in set of sample stickers.
+Pass your own list if you want the same behaviour on both.
 
 ### Photo library URIs on iOS
 
@@ -192,6 +220,48 @@ bundle; UIKit takes layout direction from the app's own localizations, and the
 underlying editor never sets `semanticContentAttribute`. So the iOS editor lays
 out right-to-left when your app itself is running in an RTL language, and not
 because of this option.
+
+## Errors
+
+`open()` rejects with one of these codes on `error.code`:
+
+| Code | When |
+| --- | --- |
+| `E_CANCELLED` | The user closed the editor without saving. Usually not an error worth showing. |
+| `E_IN_PROGRESS` | `open()` was called while another editor session was still open. |
+| `E_INVALID_OPTIONS` | `path` was missing or empty. |
+| `E_NO_ACTIVITY` | There was no screen to present the editor from, e.g. the app was in the background. |
+| `E_FAILED` | The image could not be loaded or saved. `error.message` says which, including a missing photo library permission on iOS. |
+
+```js
+try {
+  const edited = await open({ path });
+} catch (e) {
+  if (e.code !== 'E_CANCELLED') {
+    console.warn(e.code, e.message);
+  }
+}
+```
+
+## Testing with Jest
+
+The native module is not available under Jest. Mock it with the bundled stub,
+whose `open` resolves with a fake path and can be overridden per test:
+
+```js
+// jest.setup.js
+jest.mock('@codebymanan/react-native-photo-editor', () =>
+  require('@codebymanan/react-native-photo-editor/jest/mock')
+);
+```
+
+```js
+import { open } from '@codebymanan/react-native-photo-editor';
+
+open.mockRejectedValueOnce(
+  Object.assign(new Error('cancelled'), { code: 'E_CANCELLED' })
+);
+```
 
 ## Contributing
 
