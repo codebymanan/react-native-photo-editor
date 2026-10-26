@@ -8,6 +8,34 @@ A React Native photo editor plugin wrapping native editors for Android and iOS.
 npm install @codebymanan/react-native-photo-editor
 ```
 
+### iOS editor version
+
+On iOS the editor is [ZLImageEditor](https://github.com/longitachi/ZLImageEditor).
+Its 4.x line adds layout support for iPhone Duo and iPad multi-window, but it
+only compiles with **Xcode 27.1 or newer**. So `pod install` picks the version
+for you based on the Xcode it finds:
+
+| Xcode at `pod install` | ZLImageEditor |
+| --- | --- |
+| 27.1 or newer | 4.x |
+| older | 3.x |
+
+Both work with every option this library offers. To choose explicitly, set this
+at the top of `ios/Podfile`:
+
+```ruby
+ENV['PHOTO_EDITOR_ZLIMAGEEDITOR_VERSION'] = '3.0' # or '4.0'
+```
+
+Pin it when the machine that runs `pod install` is not the one that builds,
+for example a CI image on an older Xcode, or when your team shares a
+`Podfile.lock` across Xcode versions.
+
+After changing the variable or upgrading Xcode, run
+`pod update ZLImageEditor` once. A plain `pod install` stops with *"could not
+find compatible versions for pod ZLImageEditor"*, because `Podfile.lock` still
+holds the previous version.
+
 ## Usage
 
 ```js

@@ -5,6 +5,12 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
+# Pin the iOS editor so the committed Podfile.lock resolves the same on every
+# Xcode. Without this the library picks 4.x on Xcode 27.1+ and 3.x below it, and
+# a lockfile from one would fail `pod install` on the other. Use '4.0' to try the
+# newer editor locally (needs Xcode 27.1+), then `pod update ZLImageEditor`.
+ENV['PHOTO_EDITOR_ZLIMAGEEDITOR_VERSION'] ||= '3.0'
+
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
