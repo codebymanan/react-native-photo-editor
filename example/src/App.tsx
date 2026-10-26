@@ -1,5 +1,15 @@
 import { useState } from 'react';
-import { Button, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Button,
+  Image,
+  Platform,
+  Pressable,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { open } from '@codebymanan/react-native-photo-editor';
 
 const SAMPLE_IMAGE =
@@ -68,12 +78,14 @@ export default function App() {
   const [editedImage, setEditedImage] = useState<string | null>(null);
   const [status, setStatus] = useState('Tap the button to start editing');
   const [selected, setSelected] = useState(LANGUAGES[0]!);
+  // Sized from the loaded image so tall photos scroll instead of squashing.
+  const [aspectRatio, setAspectRatio] = useState(1);
 
-  const onEdit = async () => {
+  const edit = async (path: string) => {
     try {
       setStatus('Editing…');
       const result = await open({
-        path: SAMPLE_IMAGE,
+        path,
         stickers: STICKERS,
         language: selected.tag,
         translations: selected.translations,
@@ -86,7 +98,10 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      contentInsetAdjustmentBehavior="automatic"
+    >
       <View style={styles.languages}>
         {LANGUAGES.map((entry) => (
           <Pressable
@@ -100,25 +115,37 @@ export default function App() {
           </Pressable>
         ))}
       </View>
-      <Button title="Edit photo" onPress={onEdit} />
+      <Button title="Edit photo" onPress={() => edit(SAMPLE_IMAGE)} />
       <Text style={styles.status}>{status}</Text>
       {editedImage && (
-        <Image
-          source={{ uri: `file://${editedImage}` }}
-          style={styles.preview}
-          resizeMode="contain"
-        />
+        <>
+          <Button title="Edit again" onPress={() => edit(editedImage)} />
+          <Image
+            source={{ uri: `file://${editedImage}` }}
+            style={[styles.preview, { aspectRatio }]}
+            resizeMode="contain"
+            onLoad={(e) => {
+              const { width, height } = e.nativeEvent.source;
+              if (width > 0 && height > 0) setAspectRatio(width / height);
+            }}
+          />
+        </>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
+    // iOS insets the scroll view for the safe area itself; Android draws
+    // edge-to-edge, so clear the status and navigation bars by hand.
+    paddingTop:
+      Platform.OS === 'android' ? (StatusBar.currentHeight ?? 0) + 16 : 16,
+    paddingBottom: Platform.OS === 'android' ? 64 : 16,
   },
   languages: {
     flexDirection: 'row',
@@ -147,6 +174,6 @@ const styles = StyleSheet.create({
   },
   preview: {
     width: '100%',
-    flex: 1,
+    marginTop: 12,
   },
 });
