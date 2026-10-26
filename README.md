@@ -4,6 +4,12 @@ A React Native photo editor plugin wrapping native editors for Android and iOS.
 Call `open()` with an image, the user edits it in a full-screen native editor,
 and you get back the path of the edited file.
 
+<p align="center">
+  <img src="docs/images/demo.gif" width="595" alt="The same edit on Android and iOS side by side: open() launches the native editor, the user adds text and sunglasses and crown stickers, then saves, and the app shows the edited photo" />
+</p>
+
+<p align="center"><sub>Android (left) and iOS (right). Photo by André Spieker on Unsplash.</sub></p>
+
 ## Features
 
 Each platform uses a mature native editor, so the toolsets differ slightly:
