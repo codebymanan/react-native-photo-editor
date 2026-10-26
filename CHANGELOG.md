@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## 1.0.1 - 2026-10-26
+
+The first stable release. There is no 1.0.0: that number was used by an
+early build that was later unpublished, and npm never reuses a version.
 
 ### Fixed
 

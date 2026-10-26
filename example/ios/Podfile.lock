@@ -3,7 +3,7 @@ PODS:
   - hermes-engine (250829098.0.10):
     - hermes-engine/Pre-built (= 250829098.0.10)
   - hermes-engine/Pre-built (250829098.0.10)
-  - PhotoEditor (0.2.1):
+  - PhotoEditor (1.0.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2010,7 +2010,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   FBLazyVector: c00c20551d40126351a6783c47ce75f5b374851b
   hermes-engine: 71e84660af7d90e9661316b7d254afc29a950189
-  PhotoEditor: fd84b5baa61b92792633409cabb0c647325b5f9b
+  PhotoEditor: 6a654882b899f99af37ceb1eaec7409b9aab99ee
   RCTDeprecation: 3bb167081b134461cfeb875ff7ae1945f8635257
   RCTRequired: 74839f55d5058a133a0bc4569b0afec750957f64
   RCTSwiftUI: 87a316382f3eab4dd13d2a0d0fd2adcce917361a
