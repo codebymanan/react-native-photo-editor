@@ -1,12 +1,73 @@
 # @codebymanan/react-native-photo-editor
 
 A React Native photo editor plugin wrapping native editors for Android and iOS.
+Call `open()` with an image, the user edits it in a full-screen native editor,
+and you get back the path of the edited file.
+
+## Features
+
+Each platform uses a mature native editor, so the toolsets differ slightly:
+
+| | Android | iOS |
+| --- | :---: | :---: |
+| Freehand drawing and eraser | ✓ | ✓ |
+| Shapes (line, arrow, oval, rectangle) | ✓ | |
+| Text | ✓ | ✓ |
+| Emoji | ✓ | |
+| Your own image stickers | ✓ | ✓ |
+| Filters | ✓ | ✓ |
+| Crop and rotate | | ✓ |
+| Mosaic | | ✓ |
+| Brightness, contrast and saturation sliders | | ✓ |
+| Undo and redo | ✓ | ✓ |
+| Localized UI, including right-to-left | ✓ | ✓ |
+
+Android uses [PhotoEditor](https://github.com/burhanrashid52/PhotoEditor) and iOS
+uses [ZLImageEditor](https://github.com/longitachi/ZLImageEditor).
+
+## Requirements
+
+- React Native with the New Architecture enabled, which is the default since
+  0.76. Tested on 0.85 and 0.88.
+- iOS: the minimum version your React Native version supports.
+- Android: `minSdkVersion` 24.
 
 ## Installation
 
 ```sh
 npm install @codebymanan/react-native-photo-editor
+# or
+yarn add @codebymanan/react-native-photo-editor
 ```
+
+On iOS, install the pods:
+
+```sh
+cd ios && bundle exec pod install
+# or, from the project root
+npx pod-install
+```
+
+Android needs no extra step; autolinking picks the library up.
+
+Then **rebuild the app** (`npx react-native run-ios` / `run-android`, or build
+from Xcode / Android Studio). Reloading JavaScript is not enough: until the
+native code is compiled into the app, importing the library throws
+*"TurboModuleRegistry.getEnforcing(...): 'PhotoEditor' could not be found"*.
+
+### Expo
+
+The library contains native code, so it does not run in Expo Go. In a
+[development build](https://docs.expo.dev/develop/development-builds/introduction/)
+it is autolinked like any other native library, with no config plugin:
+
+```sh
+npx expo install @codebymanan/react-native-photo-editor
+npx expo prebuild
+```
+
+If you pass `ph://` URIs on iOS, add `NSPhotoLibraryUsageDescription` under
+`ios.infoPlist` in your app config (see [below](#photo-library-uris-on-ios)).
 
 ### iOS editor version
 
@@ -53,9 +114,24 @@ const editedPath = await open({
 | Option | Type | Description |
 | --- | --- | --- |
 | `path` | `string` | **Required.** Image to edit. Accepts a local file path, a `file://` URI, a remote `http(s)` URL, a `content://` URI (Android) or a `ph://` photo library URI (iOS, see below). |
-| `stickers` | `string[]` | Sticker images shown in the sticker picker, as remote URLs or local paths. On iOS the sticker tool only appears when this is non-empty. |
+| `stickers` | `string[]` | Sticker images shown in the sticker picker, as remote URLs or local paths. The sticker tool only appears when this is non-empty. |
 | `language` | `string` | BCP-47 tag (`'fr'`, `'pt-BR'`, `'zh-Hans'`) for the editor UI. Defaults to the device language. See [Localization](#localization). |
 | `translations` | `Record<string, string>` | Per-key string overrides. See [Localization](#localization). |
+
+### The edited file
+
+The resolved value is an absolute path **without** a `file://` prefix, always
+to a PNG. Add the prefix when you hand it to an `<Image>`:
+
+```js
+<Image source={{ uri: `file://${editedPath}` }} />
+```
+
+The file lives in the app's cache directory on Android and its temporary
+directory on iOS. The library never deletes these files, and the operating
+system may clear those directories when it needs space, so move the file
+somewhere permanent (or upload it) if you need to keep it, and delete it when
+you are done.
 
 ### Stickers
 
@@ -81,9 +157,7 @@ Images bundled with `require('./sticker.png')` are not file paths in release
 builds, so they cannot be passed directly. Host them remotely or copy them to
 the device first.
 
-When `stickers` is omitted or empty the platforms differ: **iOS** hides the
-sticker tool, while **Android** shows a small built-in set of sample stickers.
-Pass your own list if you want the same behaviour on both.
+When `stickers` is omitted or empty, both platforms hide the sticker tool.
 
 ### Photo library URIs on iOS
 
@@ -133,7 +207,7 @@ resources, so your values win:
 </resources>
 ```
 
-That's the whole mechanism. Three things worth knowing:
+That's the whole mechanism. Four things worth knowing:
 
 - **Override only what you need.** Keys you leave out fall back to this
   library's English.
@@ -195,7 +269,7 @@ reason to reach for a `values-<lang>` folder first on Android and treat
 | `pe_label_opacity` | Opacity | |
 | `pe_label_undo` | Undo | ✓ |
 | `pe_label_redo` | Redo | |
-| `pe_label_close` | Close | | |
+| `pe_label_close` | Close | |
 | `pe_label_done` | Done | ✓ |
 | `pe_label_save` | Save | ✓ |
 | `pe_label_cancel` | Cancel | ✓ |
@@ -299,7 +373,9 @@ open.mockRejectedValueOnce(
 
 ## License
 
-MIT
+MIT. The Android editor screen is adapted from the
+[PhotoEditor](https://github.com/burhanrashid52/PhotoEditor) sample app; see
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ---
 

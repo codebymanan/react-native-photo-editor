@@ -25,9 +25,11 @@ The [example app](/example/) demonstrates usage of the library. You need to run 
 
 It is configured to use the local version of the library, so any changes you make to the library's source code will be reflected in the example app. Changes to the library's JavaScript code will be reflected in the example app without a rebuild, but native code changes will require a rebuild of the example app.
 
-If you want to use Android Studio or Xcode to edit the native code, you can open the `example/android` or `example/ios` directories respectively in those editors. To edit the Objective-C or Swift files, open `example/ios/PhotoEditorExample.xcworkspace` in Xcode and find the source files at `Pods > Development Pods > react-native-photo-editor`.
+If you want to use Android Studio or Xcode to edit the native code, you can open the `example/android` or `example/ios` directories respectively in those editors. To edit the Objective-C or Swift files, open `example/ios/PhotoEditorExample.xcworkspace` in Xcode and find the source files at `Pods > Development Pods > PhotoEditor`.
 
-To edit the Java or Kotlin files, open `example/android` in Android studio and find the source files at `react-native-photo-editor` under `Android`.
+To edit the Kotlin files, open `example/android` in Android Studio and find the library's module, named after the package, in the Project view.
+
+Run `bundle install` and `bundle exec pod install` in `example/ios` before the first iOS build, and again after changing `PhotoEditor.podspec`.
 
 You can use various commands from the root directory to work with the project.
 
@@ -75,19 +77,18 @@ To fix formatting errors, run the following:
 yarn lint --fix
 ```
 
-
-
 ### Scripts
 
 The `package.json` file contains various scripts for common tasks:
 
 - `yarn`: setup project by installing dependencies.
 - `yarn typecheck`: type-check files with TypeScript.
-  - `yarn lint`: lint files with [ESLint](https://eslint.org/).
-    - `yarn example start`: start the Metro server for the example app.
+- `yarn lint`: lint files with [ESLint](https://eslint.org/).
+- `yarn prepare`: build the library into `lib/` with [react-native-builder-bob](https://github.com/callstack/react-native-builder-bob).
+- `yarn example start`: start the Metro server for the example app.
 - `yarn example android`: run the example app on Android.
 - `yarn example ios`: run the example app on iOS.
-  
+
 ### Sending a pull request
 
 > **Working on your first pull request?** You can learn how from this _free_ series: [How to Contribute to an Open Source Project on GitHub](https://app.egghead.io/playlists/how-to-contribute-to-an-open-source-project-on-github).
@@ -95,7 +96,7 @@ The `package.json` file contains various scripts for common tasks:
 When you're sending a pull request:
 
 - Prefer small pull requests focused on one change.
-- Verify that linters and tests are passing.
+- Verify that `yarn lint` and `yarn typecheck` pass, and that the example app still builds and runs on both platforms.
 - Review the documentation to make sure it looks good.
-- Follow the pull request template when opening a pull request.
+- Add a line under "Unreleased" in [CHANGELOG.md](CHANGELOG.md) for user-facing changes.
 - For pull requests that change the API or implementation, discuss with maintainers first by opening an issue.
