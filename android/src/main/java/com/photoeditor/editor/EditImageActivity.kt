@@ -13,9 +13,16 @@ import android.view.View
 import android.view.animation.AnticipateOvershootInterpolator
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.updatePadding
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -64,7 +71,7 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
     private lateinit var mRvFilters: RecyclerView
     private lateinit var mImgUndo: View
     private lateinit var mImgRedo: View
-    private val mEditingToolsAdapter = EditingToolsAdapter(this)
+    private lateinit var mEditingToolsAdapter: EditingToolsAdapter
     private val mFilterViewAdapter = FilterViewAdapter(this)
     private lateinit var mRootView: ConstraintLayout
     private val mConstraintSet = ConstraintSet()
@@ -94,13 +101,29 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
             return
         }
 
+        // Sheets and dialogs restored by the system lost their listeners along with
+        // the old activity, so close them rather than leave controls that do nothing
+        // or crash. Configuration changes are handled in place (see the manifest), so
+        // this only happens after the process was killed in the background.
+        if (savedInstanceState != null) {
+            supportFragmentManager.fragments
+                .filterIsInstance<DialogFragment>()
+                .forEach { it.dismissAllowingStateLoss() }
+        }
+
         EditorStrings.setOverrides(intent.getBundleExtra(EXTRA_TRANSLATIONS))
 
-        makeFullScreen()
         setContentView(R.layout.pe_activity_edit_image)
 
         initViews()
+        applyWindowInsets()
         mTxtCurrentTool.setEditorText(R.string.pe_app_name)
+
+        // Android 16 stops calling onBackPressed() for apps targeting API 36, so the
+        // back gesture has to go through the dispatcher to reach the save prompt.
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() = handleBack()
+        })
 
         mPropertiesBSFragment = PropertiesBSFragment()
         mEmojiBSFragment = EmojiBSFragment()
@@ -111,9 +134,10 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
         mPropertiesBSFragment.setPropertiesChangeListener(this)
         mShapeBSFragment.setPropertiesChangeListener(this)
 
-        intent.getStringArrayListExtra(EXTRA_STICKERS)?.let {
-            mStickerBSFragment.setStickers(it)
-        }
+        // Like iOS, offer the sticker tool only when the caller passed stickers.
+        val stickers = intent.getStringArrayListExtra(EXTRA_STICKERS).orEmpty()
+        mStickerBSFragment.setStickers(stickers)
+        mEditingToolsAdapter = EditingToolsAdapter(this, showStickerTool = stickers.isNotEmpty())
 
         val llmTools = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mRvTools.layoutManager = llmTools
@@ -180,6 +204,28 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
         imgClose.setOnClickListener(this)
     }
 
+    /**
+     * Draws the editor edge to edge on every API level and pads it clear of the
+     * system bars. Android 15 forces edge to edge on apps targeting API 35, and
+     * without the padding the navigation bar sits on top of close and save.
+     */
+    private fun applyWindowInsets() {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, mRootView).apply {
+            hide(WindowInsetsCompat.Type.statusBars())
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            // The editor is black, so keep the navigation bar icons light
+            isAppearanceLightNavigationBars = false
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(mRootView) { view, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+            view.updatePadding(left = bars.left, top = bars.top, right = bars.right, bottom = bars.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+    }
+
     override fun onEditTextChangeListener(rootView: View, text: String, colorCode: Int) {
         val textEditorDialogFragment =
             TextEditorDialogFragment.show(this, text.toString(), colorCode)
@@ -237,7 +283,7 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
             }
 
             R.id.imgSave -> saveImage()
-            R.id.imgClose -> onBackPressed()
+            R.id.imgClose -> handleBack()
         }
     }
 
@@ -398,8 +444,8 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
         finish()
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
+    /** Shared by the close button and the system back button or gesture. */
+    private fun handleBack() {
         if (mIsFilterVisible) {
             showFilter(false)
             mTxtCurrentTool.setEditorText(R.string.pe_app_name)

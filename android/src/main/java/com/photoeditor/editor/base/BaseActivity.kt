@@ -4,8 +4,6 @@ import android.R
 import android.app.ProgressDialog
 import android.content.pm.PackageManager
 import android.view.View
-import android.view.Window
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -33,14 +31,6 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     open fun isPermissionGranted(isGranted: Boolean, permission: String?) {}
-
-    fun makeFullScreen() {
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
-    }
 
     protected fun showLoading(message: String) {
         mProgressDialog = ProgressDialog(this)

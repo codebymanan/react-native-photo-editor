@@ -9,12 +9,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -44,6 +49,12 @@ class TextEditorDialogFragment : DialogFragment() {
             val height = ViewGroup.LayoutParams.MATCH_PARENT
             dialog.window!!.setLayout(width, height)
             dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            // Edge to edge on every API level; onViewCreated pads for the bars and
+            // keyboard, since Android 15+ no longer resizes the window for the IME.
+            WindowCompat.setDecorFitsSystemWindows(dialog.window!!, false)
+            // Opens the keyboard on the focused text field as the dialog appears.
+            // toggleSoftInput(), used before, is a no-op on recent Android versions.
+            dialog.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         }
     }
 
@@ -89,7 +100,18 @@ class TextEditorDialogFragment : DialogFragment() {
         mAddTextEditText.setText(arguments.getString(EXTRA_INPUT_TEXT))
         mColorCode = arguments.getInt(EXTRA_COLOR_CODE)
         mAddTextEditText.setTextColor(mColorCode)
-        mInputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+        mAddTextEditText.requestFocus()
+
+        // Keeps Done above the status bar and the color picker above the keyboard
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or
+                    WindowInsetsCompat.Type.displayCutout() or
+                    WindowInsetsCompat.Type.ime()
+            )
+            v.updatePadding(left = bars.left, top = bars.top, right = bars.right, bottom = bars.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
 
         //Make a callback on activity when user is done with text editing
         mAddTextDoneTextView.setOnClickListener { onClickListenerView ->

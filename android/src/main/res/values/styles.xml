@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="PhotoEditorTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -11,6 +11,10 @@
     <style name="PhotoEditorTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <!-- The editor is black. Android 15+ derives the navigation bar's look
+             from the theme, so declare it dark here as well. -->
+        <item name="android:navigationBarColor">@android:color/black</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
     </style>
 
     <style name="PhotoEditorTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

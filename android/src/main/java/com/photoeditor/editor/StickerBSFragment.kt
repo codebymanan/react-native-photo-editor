@@ -23,16 +23,14 @@ import android.widget.TextView
 
 class StickerBSFragment : BottomSheetDialogFragment() {
     private var mStickerListener: StickerListener? = null
-    private var stickerPathList: List<String> = DEFAULT_STICKERS
+    private var stickerPathList: List<String> = emptyList()
 
     fun setStickerListener(stickerListener: StickerListener?) {
         mStickerListener = stickerListener
     }
 
     fun setStickers(stickers: List<String>) {
-        if (stickers.isNotEmpty()) {
-            stickerPathList = stickers
-        }
+        stickerPathList = stickers
     }
 
     interface StickerListener {
@@ -101,7 +99,7 @@ class StickerBSFragment : BottomSheetDialogFragment() {
                                 .load(stickerPathList[layoutPosition])
                                 .into(object : CustomTarget<Bitmap?>(256, 256) {
                                     override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                                        mStickerListener!!.onStickerClick(resource)
+                                        mStickerListener?.onStickerClick(resource)
                                     }
 
                                     override fun onLoadCleared(placeholder: Drawable?) {}
@@ -111,20 +109,5 @@ class StickerBSFragment : BottomSheetDialogFragment() {
                 }
             }
         }
-    }
-
-    companion object {
-        // Image Urls from flaticon(https://www.flaticon.com/stickers-pack/food-289)
-        private val DEFAULT_STICKERS = listOf(
-                "https://cdn-icons-png.flaticon.com/256/4392/4392452.png",
-                "https://cdn-icons-png.flaticon.com/256/4392/4392455.png",
-                "https://cdn-icons-png.flaticon.com/256/4392/4392459.png",
-                "https://cdn-icons-png.flaticon.com/256/4392/4392462.png",
-                "https://cdn-icons-png.flaticon.com/256/4392/4392465.png",
-                "https://cdn-icons-png.flaticon.com/256/4392/4392467.png",
-                "https://cdn-icons-png.flaticon.com/256/4392/4392469.png",
-                "https://cdn-icons-png.flaticon.com/256/4392/4392471.png",
-                "https://cdn-icons-png.flaticon.com/256/4392/4392522.png",
-        )
     }
 }
