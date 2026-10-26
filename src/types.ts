@@ -7,7 +7,7 @@ export interface PhotoEditorOptions {
   path: string;
   /**
    * Optional list of sticker images (remote URLs or local paths) shown in the
-   * sticker picker. On iOS the sticker tool only appears when this is set.
+   * sticker picker. The sticker tool only appears when this is non-empty.
    */
   stickers?: string[];
   /**

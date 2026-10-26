@@ -4,8 +4,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application>
+        <!-- The editor keeps its edits only in memory, so a recreated activity would
+             lose them. configChanges keeps it alive through dark mode, font size,
+             rotation on large screens and window resizes; the layout adapts. -->
         <activity
             android:name="com.photoeditor.editor.EditImageActivity"
+            android:configChanges="density|fontScale|fontWeightAdjustment|keyboard|keyboardHidden|layoutDirection|locale|navigation|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/PhotoEditorTheme.NoActionBar" />

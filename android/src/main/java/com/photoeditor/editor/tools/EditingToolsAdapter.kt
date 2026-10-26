@@ -16,8 +16,10 @@ import com.photoeditor.editor.setEditorText
  * @version 0.1.2
  * @since 5/23/2018
  */
-class EditingToolsAdapter(private val mOnItemSelected: OnItemSelected) :
-    RecyclerView.Adapter<EditingToolsAdapter.ViewHolder>() {
+class EditingToolsAdapter(
+    private val mOnItemSelected: OnItemSelected,
+    showStickerTool: Boolean
+) : RecyclerView.Adapter<EditingToolsAdapter.ViewHolder>() {
     private val mToolList: MutableList<ToolModel> = ArrayList()
 
     interface OnItemSelected {
@@ -65,6 +67,8 @@ class EditingToolsAdapter(private val mOnItemSelected: OnItemSelected) :
         mToolList.add(ToolModel(R.string.pe_label_eraser, R.drawable.pe_ic_eraser, ToolType.ERASER))
         mToolList.add(ToolModel(R.string.pe_label_filter, R.drawable.pe_ic_photo_filter, ToolType.FILTER))
         mToolList.add(ToolModel(R.string.pe_label_emoji, R.drawable.pe_ic_insert_emoticon, ToolType.EMOJI))
-        mToolList.add(ToolModel(R.string.pe_label_sticker, R.drawable.pe_ic_sticker, ToolType.STICKER))
+        if (showStickerTool) {
+            mToolList.add(ToolModel(R.string.pe_label_sticker, R.drawable.pe_ic_sticker, ToolType.STICKER))
+        }
     }
 }
